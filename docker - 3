@@ -1,0 +1,60 @@
+Create EC2 instance for terraform:
+
+    1  sudo dnf install -y dnf-plugins-core
+    2  sudo dnf config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+    3  sudo dnf -y install terraform
+    4  terraform -v
+    5  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    6  unzip awscliv2.zip
+    7  sudo ./aws/install
+    8  aws configure
+    9  cd .aws/
+   10  ll
+   11  cat config
+   12  cat credentials
+   13  cd
+   14  mkdir terra
+   15  cd terra/
+   16  vim ec2.tf
+
+***********************************************************************************************************************
+  security_group_id = aws_security_group.web_access23.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 22
+  ip_protocol       = "tcp"
+  to_port           = 22
+}
+resource "aws_vpc_security_group_ingress_rule" "allow_https" {
+  security_group_id = aws_security_group.web_access23.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 443
+  ip_protocol       = "tcp"
+  to_port           = 443
+}
+resource "aws_vpc_security_group_egress_rule" "allow_all_taraffic" {
+  security_group_id = aws_security_group.web_access23.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
+}
+#ec2 instance code starts here
+resource "aws_instance" "custom-server" {
+  ami               = "ami-05ffe3c48a9991133"
+  availability_zone = "us-east-1a"
+  instance_type     = "t2.micro"
+  security_groups   = ["${aws_security_group.web_access23.name}"]
+  key_name          = "bala-key-pair-name"
+
+  tags = {
+    Name     = "hello-India"
+    Stage    = "testing"
+    Location = "India"
+  }
+}
+
+***********************************************************************************************************************
+   1  terraform init
+   2  terraform fmt
+   3  terraform validate
+   4  terraform plan
+   5  terraform apply
+                                                                                                                   47,1          Bot
