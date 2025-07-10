@@ -1,0 +1,114 @@
+Maven : 
+jenkins t2.medium 20gb
+sudo su -
+hostnamectl set-hostname jenkins.example.com
+bash
+    1  cat /etc/os-release
+    2  sudo yum update –y
+    3  sudo wget -O /etc/yum.repos.d/jenkins.repo     https://pkg.jenkins.io/redhat-stable/jenkins.repo
+    4  sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+    5  sudo yum upgrade
+    6  sudo yum install java-17-amazon-corretto -y
+    7  sudo yum install jenkins -y
+    8  sudo systemctl enable jenkins
+    9  sudo systemctl start jenkins
+   10  sudo systemctl status jenkins
+   copy public ip :8080
+   11  cat /var/lib/jenkins/secrets/initialAdminPassword
+   copy password
+   profile -> security -> token -> git weebhook
+   plugins -> maven github deploy
+   12  yum install maven
+   13  yum install git -y
+   14  git init
+   15  mvn -v
+  java path
+  maven path
+   
+Docker:
+-> sudo su -
+-> hostnamectl set-hostname docker.example.com
+-> bash
+-> yum install docker* -y
+-> systemctl start docker
+-> systemctl enable docker
+-> docker info
+-> yum install awscli -y
+-> aws configure
+ecr -> create -> my-devops -> view push comments
+
+Jenkins:
+ssh-keygen
+vim .ssh/id_rsa.pub
+docker
+vim .ssh/authorized_keys
+Jenkins
+ssh root@docker_ip
+(connected / not)
+
+Jenkins -> manage Jenkins -> plugins -> available -> search -> publish over ssh -> install -> restart
+jenkis:
+passwd root
+vim /etc/ssh/sshd_config
+systemctl restart sshd
+systectl enable sshd
+docker:
+passwd root
+vim /etc/ssh/sshd_config
+systemctl restart sshd
+systectl enable sshd
+
+
+Jenkins
+manage Jenkins -> system -> publish over ssh -> ssh server -> add
+name : Jenkins
+hostname : jenkins_private_ip
+username : root
+remote : /
+
+name : docker
+hostname : docker_private_ip
+username : root
+remote : /
+
+transferset :
+(see pdf)
+rsync -avh /var/lib/jenkins/workspace/maven-project/* root@172.31.14.140:/opt
+ 
+***************************************************************************
+
+-> sudo su -
+-> hostnamectl set-hostname eks-bootstrap.com
+-> bash
+-> ssh-keygen
+-> cat /etc/os-release
+-> passwd root
+---------
+---------
+-> vim /etc/ssh/sshd_config
+-> systemctl restart sshd
+-> systemctl enable sshd
+
+*******************************
+-> yum update -y
+-> curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+-> unzip awscliv2.zip
+-> sudo ./aws/install
+-> aws configure
+-> curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+-> sudo mv /tmp/eksctl /usr/local/bin
+-> eksctl version
+-> curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+-> sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+-> kubectl version --client
+
+-> iam roles attach
+-> eksctl create cluster --name milestone-2 --region us-east-1 --version 1.32 --node-type t2.small --nodes 3 --nodes-min 2 --nodes-max 4 --ssh-access --ssh-public-key /root/.ssh/id_rsa.pub
+-> kubectl get nodes
+-> 2 yml
+-> kubectl get svc
+******************************************************************************
+
+
+
+
