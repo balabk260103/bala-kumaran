@@ -1,0 +1,27 @@
+---
+- name: create multiple users
+  hosts: all
+  tasks:
+    - name: create multiple users
+      user:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - nav
+        - pav
+        - nith
+
+
+-----------
+- name: copy files
+  hosts: all
+  tasks:
+    - name: copy files
+      copy:
+        src: "{{ item }}"
+        dest: /tmp
+      loop:
+        - /etc/group
+        - /etc/fstab
+        - /etc/passwd
+        - /etc/shadow
