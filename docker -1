@@ -1,0 +1,185 @@
+ansible instance 
+*******************************************************************
+Ansible:
+	
+       yum install ansible*
+    1  ansible --version
+    2  mkdir -p /etc/ansible
+    3  cd /etc/ansible
+    4  vim ansible.cfg
+    5  ansible-galaxy collection install amazon.aws
+    6  ansible-galaxy collection install amazon.aws --force
+    7  yum install pip*
+    8  yum install python*
+    9  yum install python* --allowerasing --skip-broken
+   10  yum install ansible*
+   11  hostnamectl set-hostname ansible.example.com
+   12  bash
+   13  pip install boto
+   17  vim hosts
+******************************************
+   [localhost]
+   localhost
+   localhost ansible_connection=local ansible_python_interpreter=/usr/bin/python3
+********************************************
+   18  cd
+   19  ssh-keygen
+   20  ansible localhost --list-host
+   21  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+   22  unzip awscliv2.zip
+   23  sudo ./aws/install
+   24  aws configure
+   25  cd /etc/ansible
+   26  vim creds.yaml
+***************************************
+   aws_access_key : 
+   aws_secret_access_key : 
+***************************************
+   27  ll
+   28  vim ec2.yaml
+**********************************
+---
+- name: creating ec2 instance
+  hosts: localhost
+  vars_files:
+
+      - creds.yaml
+  tasks:
+        - name: creating Ec2 instance via Ansible
+          amazon.aws.ec2_instance:
+            name: k8s-master
+            instance_type: t2.medium
+            image_id: ami-05ffe3c48a9991133
+            vpc_subnet_id: subnet-0bc2f6fe148528bb7
+            security_group: sg-0eda96a1709f9ff73
+            key_name: bala-key-pair-name
+            region: us-east-1
+            count: 1
+            state: present
+*****************************************************************
+
+   31  ansible-playbook ec2.yaml --syntax-check
+   32  ansible-playbook ec2.yaml -C
+   33  ansible-playbook ec2.yaml
+
+********************************************************************************
+
+k8s:
+    2  yum install update
+    3  yum update -y
+    4  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    5   unzip awscliv2.zip
+    6  sudo ./aws/install
+    7  aws configure
+    8  curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+    9   sudo mv /tmp/eksctl /usr/local/bin
+   10  eksctl version
+   11  curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
+   12  sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+   13  kubectl version --client
+   14  ssh-keygen
+   15   eksctl create cluster --name cluster --region us-east-1 --version 1.32 --node-type t2.small --nodes 3 --nodes-min 2 --nodes-max 4 --ssh-access --ssh-public-key /root/.ssh/id_rsa.pub
+   16  kubectl get nodes
+   22  kubectl get pod
+   23  vim nginx.yaml
+   24  kubectl get nodes
+   25  kubectl apply -f nginx.yaml
+   26  kubectl get pod
+   27  kubectl get svc
+   28  vim service.yaml
+   29  kubectl apply -f service.yaml
+   30  kubectl get pod
+   31  kubectl get svc
+ 
+vim nginx.yaml
+------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+-----------------------
+ 
+vim service.yaml
+ 
+-------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
+
+*****************************************************************************************************************************************************************************
+
+create a ec2 instance for docker (nginx)
+
+sudo su -
+hostnamectl set-hostname docker.example.com
+bash
+yum install nginx -y
+systemctl start nginx.service
+systemctl status nginx.service
+yum install docker*
+systemctl enable docker
+systemctl status docker
+systemctl start docker
+docker pull nginx:stable-perl
+docker images
+docker run -itd --name mybrowser -p 8080:8080 nginx /bin/bash
+docker ps -a
+docker attach ca1f4c710db2
+apt update -y
+apt install nginx
+service nginx start
+service nginx status
+ctrl P + ctrl Q
+curl http://localhost
+
+create a ec2 instance for docker (ubuntu)
+
+1  yum install docker*
+    2  systemctl enable docker
+    3  systemctl start docker
+    4  systemctl status docker
+    5  docker pull ubuntu
+    6  docker pull httpd
+    7  docker ps -a
+   10  docker run -it --name web -p 8081:80 ubuntu /bin/bash
+         apt update -y
+         apt install apache2 -y
+         cd /var/www/html
+         cat > index.html 
+         hi..hellooo
+         press ctrl+d
+         service apache2 start
+         cd
+         ctrl+p+Q
+ 
+       docker ps -a
+   12  docker inspect web | less
+   13  curl http://172.17.0.3
+copy and paste the public_ip of instance and run with with specified port at to as 8081 with enabled in security group.
+  
